@@ -1,0 +1,27 @@
+# Setup doc -- https://www.elastic.co/guide/en/elasticsearch/reference/8.17/configuring-stack-security.html
+
+Other manual steps documented
+
+# Setup passwords (run within elasticsearch container)
+$ /bin/elasticsearch-setup-passwords interactive
+
+# Configure Elastic (run within elasticsearch container)
+- If enrollment token is missed on setup -- most likely will be since we are starting container in detached mode, then we must run command below to generate a new enrollment token
+$ bin/elasticsearch-create-enrollment-token --scope kibana 
+
+# Get verification codes from Kibana (run within Kibana's container)
+- $ bin/kibana-verification-code
+
+
+# For monitoring the Kibana container using built-in monitoring
+- In elasticsearch container >> elasticsearch.yml, enter in the following:
+xpack.monitoring.collection.enabled: true
+
+- Inside the kibana container >> kibana.yml, enter in the following:
+xpack.monitoring.ui.container.elasticsearch.enabled: true
+
+Go to Kibana UI >> Stack Monitoring >> Check on logs/metrics
+
+## More configs here: https://www.elastic.co/guide/en/kibana/8.17/alert-action-settings-kb.html#general-alert-action-settings
+-- Need to setup filebeat here for the logs
+

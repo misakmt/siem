@@ -1,0 +1,40 @@
+# For reference -- https://www.elastic.co/guide/en/elasticsearch/reference/current/docker.html
+services:
+  elasticsearch:
+    build:
+      context: .
+      dockerfile: Dockerfile.elasticsearch
+      # user: root
+    environment:
+      - discovery.type=single-node
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    networks:
+    - bridged_network_1
+
+  kibana:
+    build:
+      context: .
+      dockerfile: Dockerfile.kibana
+    ports:
+      - "5601:5601"
+    depends_on:
+      - elasticsearch
+    networks:
+      - bridged_network_1
+
+  filebeat:
+    build:
+      context: .
+      dockerfile: Dockerfile.filebeat
+    # volumes:
+    #   - /path/to/your/logs:/var/log
+    depends_on:
+      - elasticsearch
+    networks:
+      - bridged_network_1
+
+networks:
+  bridged_network_1:
+    driver: bridge

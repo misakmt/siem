@@ -1,0 +1,10 @@
+FROM kibana:8.17.3
+
+# Switch to root
+USER root 
+
+# Use apt-get pckg mgr to install necessary tools and then clean up to keep volume minimal
+RUN apt-get update && apt-get install -y net-tools iputils-ping vim curl && apt-get clean all
+
+# Switch back to the default user
+USER kibana
