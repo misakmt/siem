@@ -1,3 +1,18 @@
+## Was previously in bridge mode -- updating this to macvlan so that they are on my local network and vlan for easier comms
+# networks:
+#   bridged_network_1:
+#     driver: bridge
+
+networks:
+  home_network:
+    driver: macvlan
+    driver_opts:
+      parent: eth0  # Replace with your actual network interface
+    ipam:
+      config:
+        - subnet: 10.10.20.0/25  # Replace with your network’s subnet
+          gateway: 10.10.20.1
+
 # For reference -- https://www.elastic.co/guide/en/elasticsearch/reference/current/docker.html
 services:
   elasticsearch:
@@ -7,22 +22,24 @@ services:
       # user: root
     environment:
       - discovery.type=single-node
-    ports:
-      - "9200:9200"
-      - "9300:9300"
+    # ports:
+    #   - "9200:9200"
+    #   - "9300:9300"
     networks:
-    - bridged_network_1
+      home_network:
+        ipv4_address: 10.10.20.13
 
   kibana:
     build:
       context: .
       dockerfile: Dockerfile.kibana
-    ports:
-      - "5601:5601"
+    # ports:
+    #   - "5601:5601"
     depends_on:
       - elasticsearch
     networks:
-      - bridged_network_1
+      home_network:
+        ipv4_address: 10.10.20.14
 
   filebeat:
     build:
@@ -33,8 +50,5 @@ services:
     depends_on:
       - elasticsearch
     networks:
-      - bridged_network_1
-
-networks:
-  bridged_network_1:
-    driver: bridge
+      home_network:
+        ipv4_address: 10.10.20.15
